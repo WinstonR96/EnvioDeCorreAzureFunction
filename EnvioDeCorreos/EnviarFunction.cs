@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using EnvioDeCorreos.Models;
 using EnvioDeCorreos.Models.Response;
+using EnvioDeCorreos.Helpers;
 
 namespace EnvioDeCorreos
 {
@@ -21,23 +22,25 @@ namespace EnvioDeCorreos
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
             bool result = false;
+            string mensaje = "";
             Response response = new Response();
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();                
                 if (!string.IsNullOrEmpty(requestBody))
                 {                    
-                    Email email = JsonConvert.DeserializeObject<Email>(requestBody);                    
+                    Email email = JsonConvert.DeserializeObject<Email>(requestBody);
+                    result = Utils.enviarCorreo(email, out mensaje);
                     if (result)
                     {
                         response.exitoso = result;
-                        response.mensaje = "Se envió el email";
+                        response.mensaje = mensaje;
                         return (ActionResult)new OkObjectResult(response);
                     }
                     else
                     {
                         response.exitoso = result;
-                        response.mensaje = "SNo se pudo enviar el email";
+                        response.mensaje = mensaje;
                         return (ActionResult)new OkObjectResult(response);
                     }
                 }
