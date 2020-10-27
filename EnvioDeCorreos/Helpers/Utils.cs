@@ -80,6 +80,30 @@ namespace EnvioDeCorreos.Helpers
             return res;
         }
 
+        private static bool validarAdjuntos(List<string> adjuntos, out string mensaje)
+        {
+            //Validamos que la información requerida este contenida
+            int contadorAdjuntos = adjuntos.Count;
+            bool res = true;
+            mensaje = "";
+            if(contadorAdjuntos > 0)
+            {
+                foreach (var adjunto in adjuntos)
+                {
+                    if (string.IsNullOrEmpty(adjunto))
+                    {
+                        res = false;
+                        mensaje = "Hay un adjunto vacio";
+                    }
+                }
+            }
+            else
+            {
+                res = false;
+            }
+            return res;
+        }
+
 
         public static bool enviarCorreo(Email email, out string mensaje)
         {
@@ -104,6 +128,15 @@ namespace EnvioDeCorreos.Helpers
                         foreach (var ccaddress in CCEmails.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
                         {
                             Msg.CC.Add(ccaddress);
+                        }
+                    }
+
+                    if (validarAdjuntos(email.RutaAdjunto, out mensaje))
+                    {
+                        foreach(var file in email.RutaAdjunto)
+                        {
+                            Attachment data = new Attachment(file);
+                            Msg.Attachments.Add(data);
                         }
                     }
 
