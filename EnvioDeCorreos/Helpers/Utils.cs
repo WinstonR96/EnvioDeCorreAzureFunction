@@ -29,19 +29,19 @@ namespace EnvioDeCorreos.Helpers
                 if (cont == cantidadDestinatario)
                 {
                     mensaje = "Se requiere al menos un destinatario";
-                    return res;
+                    res = false;
                 }
             }
             else
             {
                 mensaje = "Se requiere al menos un destinatario";
-                return res;
+                res = false;
             }
 
             if (string.IsNullOrEmpty(email.credenciales.email) || string.IsNullOrEmpty(email.credenciales.password))
             {
                 mensaje = "Se necesita las credenciales del correo para autenticar en el servidor";
-                return res;
+                res = false;
             }
             return res;
         }       
