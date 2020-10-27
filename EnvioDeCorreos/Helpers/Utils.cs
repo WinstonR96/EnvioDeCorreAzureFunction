@@ -2,6 +2,8 @@
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 
@@ -104,6 +106,12 @@ namespace EnvioDeCorreos.Helpers
             return res;
         }
 
+        public static string getfileextensionfromurl(string url)
+        {
+            url = url.Split('?')[0];
+            url = url.Split('/').Last();
+            return url;
+        }
 
         public static bool enviarCorreo(Email email, out string mensaje)
         {
@@ -135,7 +143,13 @@ namespace EnvioDeCorreos.Helpers
                     {
                         foreach(var file in email.RutaAdjunto)
                         {
-                            Attachment data = new Attachment(file);
+                            WebClient webClient = new WebClient();
+                            byte[] bytes = webClient.DownloadData(file);
+                            MemoryStream webFile = new MemoryStream(bytes);
+                            string originalPath = new Uri(file).OriginalString;
+                            string fileName = getfileextensionfromurl(originalPath);
+                            //To Create the Attachment for sending mail.
+                            Attachment data = new Attachment(webFile, fileName);
                             Msg.Attachments.Add(data);
                         }
                     }
